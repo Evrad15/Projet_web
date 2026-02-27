@@ -1,0 +1,75 @@
+// Si tu utilises SASS (app.scss)
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+// Si tu utilises du CSS pur (app.css)
+@import 'bootstrap-icons/font/bootstrap-icons.min.css';
+
+// Fonts
+@import url('https://fonts.bunny.net/css?family=Nunito');
+
+// Variables
+@import 'variables';
+
+// Bootstrap
+@import 'bootstrap/scss/bootstrap';
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: $gray-900;
+    color: $gray-100;
+}
+
+.input-glass {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid $gray-700;
+    transition: all 0.2s ease;
+    color: $white;
+}
+
+.input-glass:focus {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: $gray-500;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+    outline: none;
+}
+
+.btn-neon {
+    background: $gray-700;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+    color: $white;
+}
+
+.btn-neon:hover {
+    background: $gray-800;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+    transform: translateY(-1px);
+}
+
+.text-indigo-400 {
+    color: $gray-400;
+}
+
+.hover\:text-white:hover {
+    color: $white;
+}
+
+.border-white\/5 {
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+.bg-white\/5 {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.text-indigo-600 {
+    color: $gray-600;
+}
+
+.focus\:ring-indigo-500\/20:focus {
+    --tw-ring-color: rgba(99, 102, 241, 0.2);
+    /* This specific color is from Tailwind, let's keep it for now or find a gray equivalent */
+    --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+    --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(3px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+    box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
