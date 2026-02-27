@@ -1,5 +1,8 @@
 [phases.setup]
-nixPkgs = ['...', 'php82Extensions.zip', 'php82Extensions.intl']
+nixPkgs = ['php82', 'php82Packages.composer', 'php82Extensions.zip', 'php82Extensions.intl', 'php82Extensions.pdo_mysql', 'php82Extensions.bcmath']
+
+[phases.build]
+cmds = ['composer install --optimize-autoloader --no-interaction', 'php artisan config:clear']
 
 [variables]
 NIXPACKS_PHP_EXTENSIONS = 'intl, zip, pdo_mysql, bcmath'
