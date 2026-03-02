@@ -14,8 +14,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class, // Remplace par le nom exact de TA classe
         ]);
+        $middleware->trustProxies(at: '*');
     })
-
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
