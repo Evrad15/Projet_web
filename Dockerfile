@@ -1,6 +1,6 @@
-FROM php:8.3-fpm
+FROM php:8.3-apache  # Ou php:8.3-cli pour artisan serve optimisé
 
-# Installation des dépendances
+# Installation des dépendances (inchangé)
 RUN apt-get update && apt-get install -y \
     libicu-dev \
     libzip-dev \
@@ -16,18 +16,27 @@ WORKDIR /var/www
 
 COPY . .
 
-# Création des dossiers nécessaires ET permissions en une seule fois
-RUN mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache \
-    && chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
-    && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+# Permissions (bon)
+RUN mkdir -p storage/framework/{sessions,views,cache} \
+    && chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
 
 RUN composer install --optimize-autoloader --no-dev --no-interaction --ignore-platform-reqs
 
-# On ne fait PAS les artisan cache ici pour éviter les erreurs de connexion DB au build
+# Apache : active mod_rewrite et document root
+RUN a2enmod rewrite \
+    && echo '<VirtualHost *:80>\n\
+        DocumentRoot /var/www/public\n\
+        <Directory /var/www/public>\n\
+            AllowOverride All\n\
+            Require all granted\n\
+        </Directory>\n\
+    </VirtualHost>' > /etc/apache2/sites-available/000-default.conf \
+    && sed -i 's!/var/www/html!/var/www/public!g' /etc/apache2/sites-available/000-default.conf
 
-# Commande de démarrage : Migrations + Seed + Cache + Serve
-CMD php artisan migrate --force --seed && \
-    php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache && \
-    php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
+# CMD : Cache + migrate + démarrage Apache (PORT auto sur 80)
+CMD php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache \
+    && php artisan migrate --force \
+    && apache2-foreground
