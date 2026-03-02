@@ -1,6 +1,6 @@
-FROM php:8.3-apache  # Ou php:8.3-cli pour artisan serve optimisé
+FROM php:8.3-apache
 
-# Installation des dépendances (inchangé)
+# Installation des dépendances
 RUN apt-get update && apt-get install -y \
     libicu-dev \
     libzip-dev \
@@ -16,16 +16,16 @@ WORKDIR /var/www
 
 COPY . .
 
-# Permissions (bon)
+# Permissions
 RUN mkdir -p storage/framework/{sessions,views,cache} \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
 RUN composer install --optimize-autoloader --no-dev --no-interaction --ignore-platform-reqs
 
-# Apache : active mod_rewrite et document root
+# Apache : mod_rewrite + document root
 RUN a2enmod rewrite \
-    && echo '<VirtualHost *:80>\n\
+    && echo '<VirtualHost *:${PORT:-8080}>\n\
         DocumentRoot /var/www/public\n\
         <Directory /var/www/public>\n\
             AllowOverride All\n\
@@ -34,9 +34,12 @@ RUN a2enmod rewrite \
     </VirtualHost>' > /etc/apache2/sites-available/000-default.conf \
     && sed -i 's!/var/www/html!/var/www/public!g' /etc/apache2/sites-available/000-default.conf
 
-# CMD : Cache + migrate + démarrage Apache (PORT auto sur 80)
+# Expose le port Railway
+EXPOSE ${PORT:-8080}
+
+# CMD avec PORT variable Railway
 CMD php artisan config:cache \
     && php artisan route:cache \
     && php artisan view:cache \
     && php artisan migrate --force \
-    && apache2-foreground
+    && exec apache2-foreground
