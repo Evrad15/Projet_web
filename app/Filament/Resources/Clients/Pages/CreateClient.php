@@ -8,7 +8,6 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
 
 class CreateClient extends CreateRecord
 {
@@ -30,19 +29,15 @@ class CreateClient extends CreateRecord
                 ])
                 ->action(function (array $data) {
                     $lienInscription = route('register.client');
-
                     Mail::send(
                         'emails.lien_inscription',
-                        [
-                            'lien' => $lienInscription,
-                        ],
+                        ['lien' => $lienInscription],
                         function ($message) use ($data) {
                             $message
                                 ->to($data['email_destinataire'])
                                 ->subject('Invitation à rejoindre notre plateforme');
                         }
                     );
-
                     Notification::make()
                         ->title('Lien envoyé avec succès !')
                         ->success()
@@ -52,29 +47,30 @@ class CreateClient extends CreateRecord
     }
 
     protected function afterCreate(): void
-{
-    $client = $this->record;
-    $plainPassword = $this->data['password']; // récupère le mdp saisi
+    {
+        $client = $this->record;
+        $plainPassword = $this->data['password'];
 
-    User::create([
-        'name'      => $client->name,
-        'email'     => $client->email,
-        'password'  => Hash::make($plainPassword),
-        'client_id' => $client->id,
-        'role'      => 'client',
-    ]);
+        User::create([
+            'name'      => $client->name,
+            'email'     => $client->email,
+            'password'  => Hash::make($plainPassword),
+            'client_id' => $client->id,
+            'role'      => 'client',
+        ]);
 
-    Mail::send(
-        'emails.client_credentials',
-        [
-            'name'     => $client->name,
-            'email'    => $client->email,
-            'password' => $plainPassword,
-        ],
-        function ($message) use ($client) {
-            $message
-                ->to($client->email, $client->name)
-                ->subject('Vos identifiants de connexion');
-        }
-    );
-}
+        Mail::send(
+            'emails.client_credentials',
+            [
+                'name'     => $client->name,
+                'email'    => $client->email,
+                'password' => $plainPassword,
+            ],
+            function ($message) use ($client) {
+                $message
+                    ->to($client->email, $client->name)
+                    ->subject('Vos identifiants de connexion');
+            }
+        );
+    }
+} // <-- accolade manquante ajoutée
