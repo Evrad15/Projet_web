@@ -56,7 +56,7 @@ return [
             'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
             'prefix' => '',
             'dump' => [
-                'dump_binary_path' => 'C:/wamp64/bin/mysql/mysql9.1.0/bin',
+                'dump_binary_path' => env('DB_DUMP_BINARY_PATH', '/usr/bin'),
                 'use_single_transaction' => true,
                 'add_extra_native_dump_options' => [
                     '--column-statistics=0',
