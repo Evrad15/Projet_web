@@ -16,11 +16,13 @@ class ClientForm
                     ->label('E-mail')
                     ->email()
                     ->required()
-                    ->unique(table: 'clients', column: 'email', ignoreRecord: true),
+                    ->unique(table: 'clients', column: 'email', ignoreRecord: true)
+                    ->unique(table: 'users', column: 'email', ignoreRecord: true),
                 TextInput::make('phone')
                     ->label('Téléphone')
                     ->tel()
-                    ->required(),
+                    ->required()
+                    ->unique(table: 'clients', column: 'phone', ignoreRecord: true),
                 TextInput::make('address')
                     ->label('Adresse')
                     ->required(),
@@ -30,7 +32,7 @@ class ClientForm
                     ->revealable()
                     ->required()
                     ->minLength(8)
-                    ->dehydrated(false), // ne pas sauvegarder dans la table clients
+                    ->dehydrated(false),
             ]);
     }
 }
