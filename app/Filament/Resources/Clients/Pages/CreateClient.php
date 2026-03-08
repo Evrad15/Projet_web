@@ -46,31 +46,56 @@ class CreateClient extends CreateRecord
         ];
     }
 
-    protected function afterCreate(): void
-    {
-        $client = $this->record;
-        $plainPassword = $this->data['password'];
+   protected function afterCreate(): void
+{
+    $client = $this->record;
+    $plainPassword = $this->data['password'];
 
-        User::create([
-            'name'      => $client->name,
-            'email'     => $client->email,
-            'password'  => Hash::make($plainPassword),
-            'client_id' => $client->id,
-            'role'      => 'client',
-        ]);
-
-        Mail::send(
-            'emails.client_credentials',
-            [
-                'name'     => $client->name,
-                'email'    => $client->email,
-                'password' => $plainPassword,
-            ],
-            function ($message) use ($client) {
-                $message
-                    ->to($client->email, $client->name)
-                    ->subject('Vos identifiants de connexion');
-            }
-        );
+    // Vérifier si un user avec cet email existe déjà
+    if (User::where('email', $client->email)->exists()) {
+        Notification::make()
+            ->title('Un compte existe déjà avec cet email !')
+            ->warning()
+            ->send();
+        return;
     }
+
+    // Vérifier si un client avec ce téléphone existe déjà
+    if (\App\Models\Client::where('phone', $client->phone)
+            ->where('id', '!=', $client->id)
+            ->exists()) {
+        Notification::make()
+            ->title('Un client avec ce numéro de téléphone existe déjà !')
+            ->warning()
+            ->send();
+        return;
+    }
+
+    User::create([
+        'name'      => $client->name,
+        'email'     => $client->email,
+        'password'  => Hash::make($plainPassword),
+        'client_id' => $client->id,
+        'role'      => 'client',
+    ]);
+
+    Mail::send(
+        'emails.client_credentials',
+        [
+            'name'     => $client->name,
+            'email'    => $client->email,
+            'password' => $plainPassword,
+        ],
+        function ($message) use ($client) {
+            $message
+                ->to($client->email, $client->name)
+                ->subject('Vos identifiants de connexion');
+        }
+    );
+
+    Notification::make()
+        ->title('Client créé avec succès !')
+        ->success()
+        ->send();
+}
 } // <-- accolade manquante ajoutée
