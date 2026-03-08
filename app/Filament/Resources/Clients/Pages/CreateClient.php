@@ -52,29 +52,29 @@ class CreateClient extends CreateRecord
     }
 
     protected function afterCreate(): void
-    {
-        $client = $this->record;
-        $plainPassword = Str::password(12);
+{
+    $client = $this->record;
+    $plainPassword = $this->data['password']; // récupère le mdp saisi
 
-        User::create([
-            'name'      => $client->name,
-            'email'     => $client->email,
-            'password'  => Hash::make($plainPassword),
-            'client_id' => $client->id,
-        ]);
+    User::create([
+        'name'      => $client->name,
+        'email'     => $client->email,
+        'password'  => Hash::make($plainPassword),
+        'client_id' => $client->id,
+        'role'      => 'client',
+    ]);
 
-        Mail::send(
-            'emails.client_credentials',
-            [
-                'name'     => $client->name,
-                'email'    => $client->email,
-                'password' => $plainPassword,
-            ],
-            function ($message) use ($client) {
-                $message
-                    ->to($client->email, $client->name)
-                    ->subject('Vos identifiants de connexion');
-            }
-        );
-    }
+    Mail::send(
+        'emails.client_credentials',
+        [
+            'name'     => $client->name,
+            'email'    => $client->email,
+            'password' => $plainPassword,
+        ],
+        function ($message) use ($client) {
+            $message
+                ->to($client->email, $client->name)
+                ->subject('Vos identifiants de connexion');
+        }
+    );
 }
