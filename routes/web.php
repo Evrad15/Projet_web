@@ -72,7 +72,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/clients', [ClientController::class, 'store'])->name('clients.store');
         Route::get('/clients/{client}', [ClientController::class, 'show'])->name('clients.show');
         Route::get('/clients/{client}/solvency', [ClientController::class, 'checkSolvency'])->name('clients.solvency');
-
+        Route::get('/register/client', [ClientRegistrationController::class, 'show'])->name('register.client');
         // --- Ventes : opérations communes (lecture + création + impression) ---
         Route::get('/sales/{sale}', [SaleController::class, 'show'])->name('sales.show');
         Route::post('/sales', [SaleController::class, 'store'])->name('sales.store');
